@@ -1,0 +1,8 @@
+- src: geerlingguy.java
+  version: "1.10.0"
+- src: geerlingguy.nginx
+  version: "2.7.0"
+- src: andrewrothstein.keycloak
+- src: git+https://gitlab.cyber.range/range/ansible-role-keycloak.git
+  name: range.keycloak
+  version: "v0.2.0"

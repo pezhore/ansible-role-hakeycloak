@@ -1,0 +1,72 @@
+---
+# tasks file for ansible-keycloak
+- name: create keycloak group
+  group:
+    name: keycloak
+    state: present
+
+- name: create keycloak user
+  user:
+    name: keycloak
+    group: keycloak
+  
+- name: create Keycloak admin user
+  shell:
+    cmd: "{{ keycloak_root }}/bin/add-user-keycloak.sh -rmaster -u{{ keycloak_admin_user }} -p{{ keycloak_admin_password }}"
+    creates: "{{ keycloak_standalone_config }}/keycloak-add-user.json"
+  become: yes
+
+- name: Setup folders for postgres
+  file:
+    path: "{{ keycloak_root }}/modules/system/layers/keycloak/org/postgresql/main"
+    state: directory
+
+- name: Download jdbc driver
+  get_url:
+    url: https://jdbc.postgresql.org/download/{{ postgres_jar }}
+    dest: "{{ postgres_module_path }}/{{ postgres_jar }}"
+    checksum: md5:79869645ab65d5ef28024fc96bb1ce28
+
+- name: create XML module
+  template:
+    src: templates/module.xml.j2
+    dest: "{{ postgres_module_path }}/module.xml"
+
+- name: just.... replace everything for standalone
+  template:
+    src: templates/standalone.xml.j2
+    dest: "{{ keycloak_standalone_config }}/standalone.xml"
+
+- name: just.... replace everything for standalone-ha
+  template:
+    src: templates/standalone-ha.xml.j2
+    dest: "{{ keycloak_standalone_config }}/standalone-ha.xml"
+
+- name: copy launcher
+  copy:
+    dest: "{{ keycloak_root }}/bin/launch.sh"
+    src: launch.sh
+    owner: keycloak
+    group: keycloak
+    mode: u=rwx,g=rwx,o=r
+
+- name: permissions fix with chown
+  command: chown -R keycloak:keycloak {{ keycloak_root }}
+
+- name: copy conf file
+  copy:
+    dest: /usr/local/keycloak/keycloak.conf
+    src: keycloak.conf
+
+- name: copy system definition
+  become: true
+  copy:
+    dest: /etc/systemd/system/keycloak.service
+    src: keycloak.service
+
+- name: start /enable
+  become: true
+  systemd:
+    name: keycloak
+    enabled: yes
+    state: started

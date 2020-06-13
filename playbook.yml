@@ -1,0 +1,20 @@
+- hosts: localhost
+  vars:
+    keycloak_admin_user: "admin"
+    keycloak_admin_password: "admin"
+  roles:
+    # We need java as a prereq
+    - role: geerlingguy.java
+      become: yes
+      java_packages:
+        - openjdk-8-jdk
+
+    # Main installer
+    - role: andrewrothstein.keycloak
+      keycloak_ver: '10.0.2'
+      keycloak_checksums:
+         '10.0.2': sha1:2b90bdefd3c837b2f3cc3d44263b6503cd6fbf62
+    # Range stuff now
+    - role: range.keycloak
+      become: yes
+      

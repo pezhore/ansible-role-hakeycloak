@@ -1,0 +1,15 @@
+---
+# defaults file for ansible-keycloak
+keycloak_version: "10.0.2"
+keycloak_root: "/usr/local/keycloak-{{keycloak_version}}"
+keycloak_standalone_config: "{{keycloak_root}}/standalone/configuration"
+keycloak_admin: "admin"
+keycloak_admin_password: "admin"
+keycloak_ha_enabled: true
+
+postgres_jar: "postgresql-42.2.14.jar"
+postgres_module_path: "{{keycloak_root}}/modules/system/layers/keycloak/org/postgresql/main"
+postgres_server: "127.0.0.1"
+postgres_db: "keycloak"
+postgres_username: "keycloak"
+postgres_password: "keycloak"
