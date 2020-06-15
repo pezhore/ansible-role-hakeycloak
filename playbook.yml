@@ -17,4 +17,4 @@
     # Range stuff now
     - role: range.keycloak
       become: yes
-      
+

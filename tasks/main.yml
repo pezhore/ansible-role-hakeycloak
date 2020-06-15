@@ -9,7 +9,7 @@
   user:
     name: keycloak
     group: keycloak
-  
+
 - name: create Keycloak admin user
   shell:
     cmd: "{{ keycloak_root }}/bin/add-user-keycloak.sh -rmaster -u{{ keycloak_admin_user }} -p{{ keycloak_admin_password }}"

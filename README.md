@@ -1,38 +1,65 @@
-Role Name
+HA Keycloak
 =========
 
-A brief description of the role goes here.
+This role should be applied after `geerlingguy.java` and `andrewrothstein.keycloak` to alter the default install of Keycloak to:
+
+1. Create a `keycloak` user and group
+2. Create an admin user/password based on the `keycloak_admin_user` and `keycloak_admin_password` role variables
+3. Create the necessary folder structure for postgres
+4. Download the jdbc driver
+5. Make the necessary xml changes to enable postgres as the backend database
+6. Create a `launch.sh` script, launcher config file, and systemd service
+7. Start/enable the keycloak service
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+* Currently, this only has been tested on Keycloak version 10.0.2 - your mileage will vary with other versions (probably poorly as I'm doing a wholesale replacement of the standalone xml files.
+* See the sample playbook for specific settings that have been tested for the java/keycloak
+* **This role should have `become` set to `yes`.**
+
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+Multiple variables are leveraged for this role
+
+
+* `keycloak_version`: Used to derive the `keycloak_root` and subsequent `keycloak_standalone_config` / `postgres_module_path` (see `defaults/main.yml`)
+* `keycloak_admin` and `keycloak_admin_password`: Used for first admin account creation 
+* `postgres_jar`: Used to specify which version of PostgreSQL Keycloak will use (used to derive the `postgres_module_path`).
+* `postgres_server`: Indicates the address for the postgres instance
+* `postgres_db`: Indicates the database to use for postgres (note this should have UTF-8 encoding)
+* `postgres_username` / `postgres_password`: Connection account/details
+
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+* **`geerlingguy.java`**
+
+```
+java_packages:
+  - openjdk-8-jdk
+```
+
+* **`andrewrothstein.keycloak`**
+
+```yaml
+keycloak_ver: '10.0.2'
+keycloak_checksums:
+   '10.0.2': sha1:2b90bdefd3c837b2f3cc3d44263b6503cd6fbf62
+```
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
     - hosts: servers
       roles:
-         - { role: username.rolename, x: 42 }
+         - { role: range.hakeycloak, become: yes }
 
 License
 -------
 
 BSD
 
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
