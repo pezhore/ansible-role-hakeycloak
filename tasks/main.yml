@@ -1,5 +1,16 @@
 ---
 # tasks file for ansible-keycloak
+
+- name: Generate PKCS#12 file
+  openssl_pkcs12:
+    action: export
+    path: /usr/local/keycloak-10.0.2/keycloak.p12
+    friendly_name: "{{ ansible_hostname }}"
+    privatekey_path: /etc/ssl/private/private.key
+    certificate_path: /etc/ssl/cert/public.crt
+    other_certificates: /etc/ssl/certs/ca.pem
+    state: present
+
 - name: create keycloak group
   group:
     name: keycloak
